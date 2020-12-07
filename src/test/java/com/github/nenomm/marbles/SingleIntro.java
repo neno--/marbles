@@ -43,7 +43,7 @@ public class SingleIntro {
   public void scheduledTest() throws InterruptedException {
     Single<String> single = Single.create(emitter -> {
       logger.info("Waiting in emitter...");
-        Thread.sleep(5000);
+      Thread.sleep(5000);
       emitter.onSuccess("singleValue");
     });
 
@@ -51,6 +51,32 @@ public class SingleIntro {
     single.observeOn(Schedulers.io());
 
     single.subscribe(new SingleObserver<String>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+        logger.info("Subscribed...");
+      }
+
+      @Override
+      public void onSuccess(String s) {
+        logger.info("Success {}", s);
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        logger.error("KaBomm", e);
+      }
+    });
+
+    logger.info("Done!");
+  }
+
+  @Test
+  public void testNever() {
+    Single<String> never = Single.never();
+
+    logger.info("Created never!");
+
+    never.subscribe(new SingleObserver<String>() {
       @Override
       public void onSubscribe(Disposable d) {
         logger.info("Subscribed...");
