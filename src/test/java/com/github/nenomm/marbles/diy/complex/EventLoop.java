@@ -1,4 +1,4 @@
-package com.github.nenomm.marbles.diy;
+package com.github.nenomm.marbles.diy.complex;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 public class EventLoop {
 
   private static final Logger logger = LoggerFactory.getLogger(EventLoop.class);
+  private static final EventLoop INSTANCE = new EventLoop();
 
   public static final class Event {
 
@@ -31,23 +32,35 @@ public class EventLoop {
 
   private final ConcurrentLinkedDeque<Event> events = new ConcurrentLinkedDeque<>();
   private final ConcurrentHashMap<String, Consumer<Object>> handlers = new ConcurrentHashMap<>();
+  private final Thread eventLoop = new Thread(this::run);
+  private volatile boolean running = true;
+
+  private EventLoop() {
+    eventLoop.start();
+  }
+
+  public static EventLoop getEventLoop() {
+    return INSTANCE;
+  }
 
   public EventLoop on(String key, Consumer<Object> handler) {
     handlers.put(key, handler);
     return this;
   }
 
-  public void dispatch(Event event) {
+  public synchronized void dispatch(Event event) {
     events.add(event);
+    notify();
   }
 
   public void stop() {
-    Thread.currentThread().interrupt();
+    logger.info("Attempting to stop the event loop...");
+    running = false;
   }
 
-  public void run() {
-    while (!events.isEmpty() || !Thread.interrupted()) {
-      if (!events.isEmpty()) {
+  private synchronized void run() {
+    while (running) {
+      while (!events.isEmpty()) {
         Event event = events.pop();
         if (handlers.containsKey(event.getKey())) {
           handlers.get(event.getKey()).accept(event.data);
@@ -55,6 +68,13 @@ public class EventLoop {
           logger.error("No handler for key {}", event.getKey());
         }
       }
+      try {
+        logger.info("Suspending the event loop");
+        wait();
+      } catch (InterruptedException e) {
+        logger.info("Resuming the event loop");
+      }
     }
+    logger.info("Event loop shut down");
   }
 }

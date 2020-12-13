@@ -1,4 +1,4 @@
-package com.github.nenomm.marbles.diy;
+package com.github.nenomm.marbles.diy.simple;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
