@@ -51,6 +51,29 @@ public class ObservableIntro {
   }
 
   @Test
+  public void justCreateObservable2() {
+    Observable<String> second = Observable.<String>create(observableEmitter -> {
+      logger.info("Creating a");
+      observableEmitter.onNext("a");
+      logger.info("Creating b");
+      observableEmitter.onNext("b");
+      logger.info("Creating c");
+      observableEmitter.onNext("c");
+      observableEmitter.onComplete();
+    });
+
+    Disposable disp = second
+        .doOnSubscribe(disposable -> logger.info("Subscribed"))
+        .doOnNext(s -> logger.info("ON NEXT: {}", s))
+        .doOnError(throwable -> logger.error("ERROR: ", throwable))
+        .doOnComplete(() -> logger.info("completed"))
+        .doOnDispose(() -> logger.info("disposed"))
+        .subscribe();
+
+    disp.dispose();
+  }
+
+  @Test
   public void delayedExecution() throws InterruptedException {
     MutableObject<Thread> thread = new MutableObject<Thread>();
 
