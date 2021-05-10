@@ -4,6 +4,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.function.Supplier;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,25 @@ import org.slf4j.LoggerFactory;
 public class SingleIntro {
 
   private static final Logger logger = LoggerFactory.getLogger(SingleIntro.class);
+
+  Supplier<SingleObserver<String>> gimme = () -> {
+    return new SingleObserver<String>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+        logger.info("Subscribed...");
+      }
+
+      @Override
+      public void onSuccess(String s) {
+        logger.info("Success {}", s);
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        logger.error("KaBoom", e);
+      }
+    };
+  };
 
   @Test
   public void justCreateSingle() {
@@ -32,7 +52,7 @@ public class SingleIntro {
 
       @Override
       public void onError(Throwable e) {
-        logger.error("KaBomm", e);
+        logger.error("KaBoom", e);
       }
     });
 
@@ -94,5 +114,23 @@ public class SingleIntro {
     });
 
     logger.info("Done!");
+  }
+
+  @Test
+  public void testKaBoom() {
+    Single<String> mySingle = Single.fromCallable(() -> {
+      throw new RuntimeException("KaBoom!");
+    });
+
+    mySingle.subscribe(gimme.get());
+  }
+
+  @Test
+  public void testKaBoomAnother() {
+    Single<String> mySingle = Single.fromCallable(() -> {
+      return null;
+    });
+
+    mySingle.subscribe(gimme.get());
   }
 }
