@@ -1,6 +1,10 @@
 package com.github.nenomm.marbles;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +21,7 @@ public class Timed {
 
   @Test
   public void withTimer() throws InterruptedException {
-    Observable ob = Observable.timer(1, TimeUnit.SECONDS);
+    Observable ob = Observable.timer(1, SECONDS);
 
     ob.subscribe(aLong -> logger.info("There: {}", aLong));
     ob.subscribe(aLong -> logger.info("There: {}", aLong));
@@ -47,19 +51,26 @@ public class Timed {
   }
 
   @Test
-  public void fromIntervalPerhapsAnotherTake() throws InterruptedException {
+  public void fromIntervalPerhapsAnotherTake() {
+    final TestObserver<Long> observer = new TestObserver<>();
+
     Observable
         .interval(50, TimeUnit.MILLISECONDS)
         .take(10000, TimeUnit.MILLISECONDS)
-        .doOnNext(aLong -> logger.info("Generated another one: {}", aLong))
+        //.doOnNext(aLong -> logger.info("Generated another one: {}", aLong))
         .map(aLong -> aLong % 5)
-        .doOnNext(aLong -> logger.info("Mapped another one: {}", aLong))
-        .buffer(3000, TimeUnit.MILLISECONDS)
+        //.doOnNext(aLong -> logger.info("Mapped another one: {}", aLong))
+        .buffer(20000, TimeUnit.MILLISECONDS)
         .flatMap(longs -> Observable
             .fromIterable(longs)
             .distinct(aLong -> aLong))
-        .subscribe(aLong -> logger.info("End result: {}", aLong));
+        //.subscribe(aLong -> logger.info("End result: {}", aLong));
+        .subscribe(observer);
 
-    Thread.sleep(15000);
+    observer.awaitTerminalEvent(15000, MILLISECONDS);
+
+    observer.assertComplete();
+    observer.assertNoErrors();
+    observer.assertValueCount(5);
   }
 }
