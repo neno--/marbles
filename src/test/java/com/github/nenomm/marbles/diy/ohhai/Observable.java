@@ -1,17 +1,17 @@
 package com.github.nenomm.marbles.diy.ohhai;
 
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Observable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Observable.class);
 
   private Observer observer;
   final private Source source;
-  final private Emitter emitter;
-  private Consumer<String> consumer;
 
   private Observable(Source source) {
     this.source = source;
-    this.emitter = new Emitter(this);
   }
 
   public static Observable from(Source source) {
@@ -19,13 +19,8 @@ public class Observable {
   }
 
   public void subscribe(Consumer<String> consumer) {
-    this.consumer = consumer;
-    source.start(emitter);
-
-  }
-
-  public void finish(String result) {
-    consumer.accept(result);
+    LOGGER.debug("Subscribing...");
+    source.start(EmitterFactory.create(this, consumer));
   }
 
   public Observer getObserver() {
@@ -43,5 +38,9 @@ public class Observable {
       o.setNext(next);
     }
     return this;
+  }
+
+  public void clear() {
+   observer = null;
   }
 }
