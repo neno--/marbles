@@ -37,7 +37,7 @@ public class EventLoop {
 
       synchronized (this) {
         Visitor visitor = visitors.poll();
-        if ((visitor != null) && visitor.visit()) {
+        if ((visitor != null) && visitor.execute()) {
           LOGGER.debug("OFFERING: {}", visitors.size());
           visitors.offer(visitor);
         } else if (visitor != null) {

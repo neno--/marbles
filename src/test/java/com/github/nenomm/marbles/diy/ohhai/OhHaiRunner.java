@@ -11,23 +11,20 @@ public class OhHaiRunner {
   @Test
   public void testRun() throws InterruptedException {
     Observable test = Observable.from(emitter -> {
-      emitter.emit("1");
-      emitter.emit("2");
-      emitter.emit("3");
-      emitter.emit("4");
+      emitter.emit("one");
+      emitter.emit("two");
+      emitter.emit("three");
+      emitter.emit("four");
     });
 
     test
-        //.next(new Map(String::toUpperCase))
-        .next(new Map(s -> "FIRST"))
+        .next(new Map(String::toUpperCase))
         .subscribe(LOGGER::info);
 
     test
-        .next(new Map(s -> "SECOND"))
+        .next(new Map(s -> "another" + s))
+        .next(new Map(String::toUpperCase))
         .subscribe(LOGGER::info);
-
-
-
 
     EventLoop.getEventLoop().shutdown();
   }
