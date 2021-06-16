@@ -17,17 +17,17 @@ public class SingleIntro {
     return new SingleObserver<String>() {
       @Override
       public void onSubscribe(Disposable d) {
-        logger.info("Subscribed...");
+        logger.info("OBSERVER: Subscribed...");
       }
 
       @Override
       public void onSuccess(String s) {
-        logger.info("Success {}", s);
+        logger.info("OBSERVER: Success {}", s);
       }
 
       @Override
       public void onError(Throwable e) {
-        logger.error("KaBoom", e);
+        logger.error("OBSERVER: KaBoom", e);
       }
     };
   };
@@ -39,22 +39,7 @@ public class SingleIntro {
       emitter.onSuccess("singleValue");
     });
 
-    single.subscribe(new SingleObserver<String>() {
-      @Override
-      public void onSubscribe(Disposable d) {
-        logger.info("Subscribed...");
-      }
-
-      @Override
-      public void onSuccess(String s) {
-        logger.info("Success {}", s);
-      }
-
-      @Override
-      public void onError(Throwable e) {
-        logger.error("KaBoom", e);
-      }
-    });
+    single.subscribe(gimme.get());
 
     logger.info("Done!");
   }
@@ -70,22 +55,7 @@ public class SingleIntro {
     // why is this needed
     single.observeOn(Schedulers.io());
 
-    single.subscribe(new SingleObserver<String>() {
-      @Override
-      public void onSubscribe(Disposable d) {
-        logger.info("Subscribed...");
-      }
-
-      @Override
-      public void onSuccess(String s) {
-        logger.info("Success {}", s);
-      }
-
-      @Override
-      public void onError(Throwable e) {
-        logger.error("KaBomm", e);
-      }
-    });
+    single.subscribe(gimme.get());
 
     logger.info("Done!");
   }
@@ -96,22 +66,7 @@ public class SingleIntro {
 
     logger.info("Created never!");
 
-    never.subscribe(new SingleObserver<String>() {
-      @Override
-      public void onSubscribe(Disposable d) {
-        logger.info("Subscribed...");
-      }
-
-      @Override
-      public void onSuccess(String s) {
-        logger.info("Success {}", s);
-      }
-
-      @Override
-      public void onError(Throwable e) {
-        logger.error("KaBomm", e);
-      }
-    });
+    never.subscribe(gimme.get());
 
     logger.info("Done!");
   }
