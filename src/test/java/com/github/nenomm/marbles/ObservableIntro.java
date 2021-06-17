@@ -2,9 +2,8 @@ package com.github.nenomm.marbles;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
@@ -13,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 public class ObservableIntro {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObservableIntro.class);
+  private static final Logger logger = LoggerFactory.getLogger(ObservableIntro.class);
+  private static AtomicInteger idCounter = new AtomicInteger(0);
 
   Supplier<Observer<String>> gimme = () -> {
     return new Observer<String>() {
@@ -55,7 +55,9 @@ public class ObservableIntro {
 
     logger.info("Calling second observable");
     second.subscribe(gimme.get());
-  };
+  }
+
+  ;
 
   @Test
   public void justCreateObservable2() {
@@ -202,7 +204,9 @@ public class ObservableIntro {
     Observable result = second
         .map(String::toUpperCase)
         .map(s -> {
-          if ("b".equalsIgnoreCase(s)) throw new RuntimeException("B");
+          if ("b".equalsIgnoreCase(s)) {
+            throw new RuntimeException("B");
+          }
           return s;
         });
 
@@ -226,7 +230,9 @@ public class ObservableIntro {
     Observable result = second
         .map(String::toUpperCase)
         .map(s -> {
-          if ("b".equalsIgnoreCase(s)) throw new RuntimeException("B");
+          if ("b".equalsIgnoreCase(s)) {
+            throw new RuntimeException("B");
+          }
           return s;
         })
         .doOnError(throwable -> logger.info("1: Error happened! {}", throwable.getMessage()))
@@ -236,5 +242,42 @@ public class ObservableIntro {
     result.subscribe(gimme.get());
 
     //result.unsubscribeOn()
+  }
+
+  @Test
+  public void fromLetter() {
+    Observable<String> src = Observable.just(identify("TEST"), identify("TEST"), identify("TEST"));
+
+    src
+        .take(1)
+        .doOnNext(logger::info)
+        .subscribe();
+
+    src
+        .take(2)
+        .doOnNext(logger::info)
+        .subscribe();
+  }
+
+  @Test
+  public void fromLetterCallable() {
+
+    Observable<String> src = Observable.fromCallable(() -> identify("TEST")).repeat();
+
+    src
+        .take(3)
+        .doOnNext(logger::info)
+        .subscribe();
+
+    src
+        .take(3)
+        .doOnNext(logger::info)
+        .subscribe();
+  }
+
+  private static String identify(String id) {
+    String result = id + idCounter.incrementAndGet();
+    logger.info("Creating {}", result);
+    return result;
   }
 }
