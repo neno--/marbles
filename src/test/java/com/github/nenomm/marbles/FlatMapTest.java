@@ -1,5 +1,6 @@
 package com.github.nenomm.marbles;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -45,6 +46,20 @@ public class FlatMapTest {
         .doOnNext(s -> logger.info("Using this one"))
         .flatMap(s -> Observable.just("C"))
         .subscribe(logger::info);
+  }
+
+  @Test
+  public void flatMapToAnotherType() {
+    Maybe<Boolean> single = Maybe.just("A")
+        .isEmpty()
+        .toMaybe()
+        .flatMap(aBoolean -> {
+          if (aBoolean) {
+            return Maybe.just(Boolean.TRUE);
+          } else {
+            return Maybe.just(Boolean.FALSE);
+          }
+        });
   }
 
 

@@ -1,5 +1,6 @@
-package com.github.nenomm.marbles;
+package com.github.nenomm.marbles.zip;
 
+import com.github.nenomm.marbles.ObservableIntro;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.Observable;

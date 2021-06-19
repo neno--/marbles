@@ -1,5 +1,6 @@
-package com.github.nenomm.marbles;
+package com.github.nenomm.marbles.zip;
 
+import com.github.nenomm.marbles.ObservableIntro;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
@@ -32,7 +33,7 @@ public class ZipTest {
 
           @Override
           public void onError(@NonNull Throwable e) {
-            logger.error("Error: {}", e);
+            logger.error("Error:", e);
           }
 
           @Override
@@ -63,7 +64,7 @@ public class ZipTest {
 
           @Override
           public void onError(@NonNull Throwable e) {
-            logger.error("Error: {}", e);
+            logger.error("Error:", e);
           }
 
           @Override
@@ -105,11 +106,11 @@ public class ZipTest {
   Observable<String> words() {
     return Observable.create(emitter -> {
       new Thread(() -> {
-        sleep(1000);
+        sleep(5000);
         emitter.onNext("A");
-        sleep(1000);
+        sleep(5000);
         emitter.onNext("B");
-        sleep(1000);
+        sleep(5000);
         emitter.onComplete();
       }).start();
     });

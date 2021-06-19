@@ -1,4 +1,4 @@
-package com.github.nenomm.marbles;
+package com.github.nenomm.marbles.zip;
 
 import io.reactivex.Observable;
 import java.util.concurrent.TimeUnit;
