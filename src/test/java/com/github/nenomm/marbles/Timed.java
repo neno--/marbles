@@ -1,10 +1,12 @@
 package com.github.nenomm.marbles;
 
+import static io.reactivex.Observable.timer;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -21,11 +23,12 @@ public class Timed {
 
   @Test
   public void withTimer() throws InterruptedException {
-    Observable ob = Observable.timer(1, SECONDS);
+    Observable ob = timer(1, SECONDS);
 
     ob.subscribe(aLong -> logger.info("There: {}", aLong));
     ob.subscribe(aLong -> logger.info("There: {}", aLong));
 
+    logger.info("Started");
     Thread.sleep(10000);
   }
 
@@ -72,5 +75,53 @@ public class Timed {
     observer.assertComplete();
     observer.assertNoErrors();
     observer.assertValueCount(5);
+  }
+
+  @Test
+  public void delayTest() {
+    final TestObserver<String> observer = new TestObserver<>();
+
+    Observable
+        .just("A", "B", "C")
+        .delay(1, SECONDS)
+        .doOnNext(logger::info)
+        .subscribe(observer);
+
+    observer.awaitTerminalEvent(5000, MILLISECONDS);
+
+    observer.assertComplete();
+    observer.assertNoErrors();
+    observer.assertValueCount(3);
+  }
+
+  @Test
+  public void anotherDelayTest() {
+    final TestObserver<String> observer = new TestObserver<>();
+
+    Observable
+        .just("A", "B", "C")
+        .delay(word -> timer(new Random().nextInt(3000), MILLISECONDS))
+        .doOnNext(logger::info)
+        .subscribe(observer);
+
+    observer.awaitTerminalEvent(7000, MILLISECONDS);
+
+    observer.assertComplete();
+    observer.assertNoErrors();
+    observer.assertValueCount(3);
+  }
+
+  @Test
+  public void timerTest() {
+    final TestObserver<Long> observer = new TestObserver<>();
+
+    timer(1, SECONDS)
+        .subscribe(aLong -> logger.info("{}", aLong));
+
+    observer.awaitTerminalEvent(5000, MILLISECONDS);
+
+    observer.assertComplete();
+    observer.assertNoErrors();
+    observer.assertValueCount(3);
   }
 }
