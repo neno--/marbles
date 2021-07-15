@@ -3,13 +3,9 @@ package com.github.nenomm.marbles.zip;
 import com.github.nenomm.marbles.ObservableIntro;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

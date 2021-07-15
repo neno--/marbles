@@ -2,7 +2,7 @@ package com.github.nenomm.marbles;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

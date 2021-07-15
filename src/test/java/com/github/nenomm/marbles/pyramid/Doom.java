@@ -1,19 +1,13 @@
 package com.github.nenomm.marbles.pyramid;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
-import java.util.function.Supplier;
-import org.apache.commons.lang3.mutable.MutableObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Doom {
 
   private static final Logger logger = LoggerFactory.getLogger(Doom.class);
-
 
 
   public Single<Boolean> singleBoolean() {
@@ -41,9 +35,13 @@ public class Doom {
   public void test1() {
     singleWrapped2().subscribe(result -> {
       result.subscribe(booleanSingle -> {
-        booleanSingle.subscribe(aBoolean -> {}, throwable -> {});
-      }, throwable -> {});
-    }, throwable -> {});
+        booleanSingle.subscribe(aBoolean -> {
+        }, throwable -> {
+        });
+      }, throwable -> {
+      });
+    }, throwable -> {
+    });
   }
 
 
