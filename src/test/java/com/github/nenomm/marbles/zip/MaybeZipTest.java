@@ -5,6 +5,7 @@ import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,27 +19,7 @@ public class MaybeZipTest {
     Maybe.zip(words(), numbers(), (s, integer) -> {
       return s + " " + integer;
     })
-        .subscribe(new MaybeObserver<String>() {
-          @Override
-          public void onSubscribe(@NonNull Disposable d) {
-            logger.info("Subscribed");
-          }
-
-          @Override
-          public void onSuccess(@NonNull String s) {
-            logger.info("Next: {}", s);
-          }
-
-          @Override
-          public void onError(@NonNull Throwable e) {
-            logger.error("Error: {}", e);
-          }
-
-          @Override
-          public void onComplete() {
-            logger.info("Completed");
-          }
-        });
+        .subscribe(gimme.get());
 
     sleep(5000);
     logger.info("DONE");
@@ -49,27 +30,7 @@ public class MaybeZipTest {
     Maybe.zip(Maybe.just("ONE"), numbers(), (s, integer) -> {
       return s + " " + integer;
     })
-        .subscribe(new MaybeObserver<String>() {
-          @Override
-          public void onSubscribe(@NonNull Disposable d) {
-            logger.info("Subscribed");
-          }
-
-          @Override
-          public void onSuccess(@NonNull String s) {
-            logger.info("Next: {}", s);
-          }
-
-          @Override
-          public void onError(@NonNull Throwable e) {
-            logger.error("Error: {}", e);
-          }
-
-          @Override
-          public void onComplete() {
-            logger.info("Completed");
-          }
-        });
+        .subscribe(gimme.get());
 
     sleep(5000);
     logger.info("DONE");
@@ -80,27 +41,7 @@ public class MaybeZipTest {
     Maybe.zip(Maybe.empty(), numbers(), (s, integer) -> {
       return s + " " + integer;
     })
-        .subscribe(new MaybeObserver<String>() {
-          @Override
-          public void onSubscribe(@NonNull Disposable d) {
-            logger.info("Subscribed");
-          }
-
-          @Override
-          public void onSuccess(@NonNull String s) {
-            logger.info("Next: {}", s);
-          }
-
-          @Override
-          public void onError(@NonNull Throwable e) {
-            logger.error("Error: {}", e);
-          }
-
-          @Override
-          public void onComplete() {
-            logger.info("Completed");
-          }
-        });
+        .subscribe(gimme.get());
 
     sleep(5000);
     logger.info("DONE");
@@ -131,4 +72,26 @@ public class MaybeZipTest {
       logger.error("Wakeup!", e);
     }
   }
+
+  private Supplier<MaybeObserver<String>> gimme = () -> new MaybeObserver<String>() {
+    @Override
+    public void onSubscribe(@NonNull Disposable d) {
+      logger.info("Subscribed");
+    }
+
+    @Override
+    public void onSuccess(@NonNull String s) {
+      logger.info("Next: {}", s);
+    }
+
+    @Override
+    public void onError(@NonNull Throwable e) {
+      logger.error("Error: {}", e);
+    }
+
+    @Override
+    public void onComplete() {
+      logger.info("Completed");
+    }
+  };
 }
