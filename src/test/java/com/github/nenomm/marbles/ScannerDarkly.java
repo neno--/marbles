@@ -12,7 +12,10 @@ public class ScannerDarkly {
   @Test
   public void justCreateScan() {
     Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-        .scan(-1, (acumulator, element) -> element)
+        .scan(-1, (accumulator, element) -> {
+          logger.info("Accumulator {}, element {}", accumulator, element);
+          return element;
+        })
         .doOnNext(integer -> logger.info("Next is {}", integer))
         .subscribe();
   }
