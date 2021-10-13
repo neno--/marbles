@@ -1,5 +1,7 @@
 package com.github.nenomm.marbles;
 
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -280,4 +282,37 @@ public class ObservableIntro {
     logger.info("Creating {}", result);
     return result;
   }
+
+  @Test
+  public void mergeEmpty() {
+    Observable.merge(Observable.just(1), Observable.empty(), Observable.just(3), Observable.just(4))
+        .subscribe(next -> logger.info("There is some output: {}", next));
+  }
+
+  @Test
+  public void mergeNever() {
+    Observable.merge(Observable.just(1), Observable.never(), Observable.just(3), Observable.just(4))
+        .subscribe(next -> logger.info("There is some output: {}", next));
+  }
+
+  @Test
+  public void mergeError() {
+    Observable.merge(Observable.just(1), Observable.error(new RuntimeException("KaBoom")), Observable.just(3), Observable.just(4))
+        .onErrorResumeNext(Observable.just(2))
+        .subscribe(next -> logger.info("There is some output: {}", next));
+  }
+
+  @Test
+  public void maybeToObservable() {
+    Maybe.just(1)
+        .subscribe(next -> logger.info("There is some output: {}", next), throwable -> {}, () -> logger.info("END"));
+  }
+
+  @Test
+  public void completableToObservable() {
+    Completable.complete()
+        .toObservable()
+        .subscribe(next -> logger.info("There is some output: {}", next), throwable -> {}, () -> logger.info("END"));
+  }
+
 }
