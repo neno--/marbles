@@ -1,9 +1,9 @@
 package com.github.nenomm.marbles;
 
+import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,5 +114,12 @@ public class MaybeTest {
         .map(s -> null)
         .toMaybe()
         .subscribe(o -> logger.info("How about this? {}", o));
+  }
+
+  @Test
+  public void emptyToCompletable() {
+    Maybe.empty()
+        .flatMapCompletable(integer -> Completable.fromRunnable(() -> logger.info("Here: {}", integer)))
+        .subscribe(() -> logger.info("How about this?"));
   }
 }
