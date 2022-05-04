@@ -122,4 +122,15 @@ public class MaybeTest {
         .flatMapCompletable(integer -> Completable.fromRunnable(() -> logger.info("Here: {}", integer)))
         .subscribe(() -> logger.info("How about this?"));
   }
+
+  @Test
+  public void testJoin() {
+    Maybe.zip(Maybe.just(1), Maybe.empty(), (a, b) -> {
+          logger.info("There it is");
+          return 12;
+        })
+        .doOnSuccess(integer -> logger.info("Nom nom: {}", integer))
+        .doOnComplete(() -> logger.info("empty"))
+        .subscribe();
+  }
 }
