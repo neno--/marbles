@@ -35,7 +35,6 @@ public class SimpleDemo {
 
     task1.andThen(task2).subscribe();
 
-
     Thread.sleep(6000);
 
     Maybe.just(1)
@@ -46,17 +45,34 @@ public class SimpleDemo {
 
 
   }
+
   @Test
   public void test1() throws InterruptedException {
 
     Single.just(1)
-            .map(i -> {
-              Thread.sleep(10000);
-              return 5*i;
-            })
+        .map(i -> {
+          Thread.sleep(10000);
+          return 5 * i;
+        })
         .subscribeOn(Schedulers.computation())
-                .subscribe();
+        .subscribe();
 
     Thread.sleep(15000);
+  }
+
+  @Test
+  public void testOnSubscribe() throws InterruptedException {
+
+    final Completable task = Completable.fromRunnable(() -> {
+          logger.info("Here I am!");
+          throw new RuntimeException();
+        })
+        .subscribeOn(Schedulers.computation());
+
+    task.doOnSubscribe(disposable -> logger.info("Subscribed"))
+        .doOnComplete(() -> logger.info("Completed"))
+        .retry(3)
+        .subscribe();
+
   }
 }
