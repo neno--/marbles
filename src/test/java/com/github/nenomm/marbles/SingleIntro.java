@@ -4,6 +4,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.Objects;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -87,5 +88,31 @@ public class SingleIntro {
     });
 
     mySingle.subscribe(gimme.get());
+  }
+
+  @Test
+  public void singleFlatMap() {
+    Single.just(1)
+        .observeOn(Schedulers.io())
+        .flatMap(i -> {
+          logger.info("going to sleep...");
+          sleep(2000);
+          logger.info("wakey wakey");
+          return Single.just(i * 2);
+        })
+        .map(Objects::toString)
+        //.subscribeOn(Schedulers.io())
+        .subscribe(gimme.get());
+    logger.info("I am here");
+    sleep(5000);
+    logger.info("Done");
+  }
+
+  public static void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

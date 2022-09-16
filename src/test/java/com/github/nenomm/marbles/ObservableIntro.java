@@ -1,10 +1,15 @@
 package com.github.nenomm.marbles;
 
+import static com.github.nenomm.marbles.SingleIntro.sleep;
+
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -313,6 +318,25 @@ public class ObservableIntro {
     Completable.complete()
         .toObservable()
         .subscribe(next -> logger.info("There is some output: {}", next), throwable -> {}, () -> logger.info("END"));
+  }
+
+  @Test
+  public void observableFlatMap() {
+    Observable.just(3,2,1)
+        .flatMap(i -> {
+          return Observable.just(i)
+              .observeOn(Schedulers.io())
+              .doOnNext(integer -> {
+                logger.info("going to sleep...");
+                sleep(i*1000);
+                logger.info("wakey wakey");
+              });
+        })
+        .map(Objects::toString)
+        .subscribe(gimme.get());
+    logger.info("I am here");
+    sleep(10000);
+    logger.info("Done");
   }
 
 }

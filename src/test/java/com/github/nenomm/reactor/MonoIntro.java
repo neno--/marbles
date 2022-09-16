@@ -1,5 +1,9 @@
 package com.github.nenomm.reactor;
 
+
+import static com.github.nenomm.marbles.SingleIntro.sleep;
+
+import io.reactivex.Single;
 import java.util.Objects;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -62,11 +66,7 @@ public class MonoIntro {
 
     Mono<String> mono = Mono.create(emitter -> {
       logger.info("Waiting in emitter...");
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        emitter.error(e);
-      }
+      sleep(1000);
       logger.info("Sending to emitter...");
       emitter.success("singleValue");
     });
@@ -78,7 +78,7 @@ public class MonoIntro {
 
     logger.info("I am here.");
 
-    Thread.sleep(3000);
+    sleep(3000);
     logger.info("Done!");
   }
 
@@ -149,11 +149,13 @@ public class MonoIntro {
   }
 
   @Test
-  public void monoMap() {
+  public void monoFlatMap() {
     Mono.just(1)
+        .publishOn(Schedulers.parallel())
         .flatMap(i -> {
-          logger.info("in flatMap");
+          logger.info("going to sleep...");
           sleep(2000);
+          logger.info("wakey wakey");
           return Mono.just(i * 2);
         })
         .map(Objects::toString)
@@ -212,11 +214,5 @@ public class MonoIntro {
         .subscribe(gimme.get());
   }
 
-  private static void sleep(long millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-  }
+
 }
