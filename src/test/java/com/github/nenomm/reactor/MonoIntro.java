@@ -3,7 +3,6 @@ package com.github.nenomm.reactor;
 
 import static com.github.nenomm.marbles.SingleIntro.sleep;
 
-import io.reactivex.Single;
 import java.util.Objects;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -214,5 +213,19 @@ public class MonoIntro {
         .subscribe(gimme.get());
   }
 
+  @Test
+  public void onNext() {
+    Mono.just(123)
+        .doOnNext(integer -> logger.info("next"))
+        .doOnTerminate(() -> logger.info("terminate"))
+        .subscribe();
+  }
 
+  @Test
+  public void onComplete() {
+    Mono.empty()
+        .doOnNext(integer -> logger.info("next"))
+        .doOnSuccess(o -> logger.info("{}", o))
+        .subscribe();
+  }
 }
