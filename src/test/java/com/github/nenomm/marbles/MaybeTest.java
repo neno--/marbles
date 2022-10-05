@@ -124,6 +124,14 @@ public class MaybeTest {
   }
 
   @Test
+  public void emptyToCompletablePartTwo() {
+    Maybe.empty()
+        .ignoreElement()
+        .andThen(Single.just("OK"))
+        .subscribe(value -> logger.info("How about this? {}", value));
+  }
+
+  @Test
   public void testJoin() {
     Maybe.zip(Maybe.just(1), Maybe.empty(), (a, b) -> {
           logger.info("There it is");
