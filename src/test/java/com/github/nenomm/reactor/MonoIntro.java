@@ -18,7 +18,7 @@ public class MonoIntro {
 
   private static final Logger logger = LoggerFactory.getLogger(MonoIntro.class);
 
-  Supplier<Subscriber<String>> gimme = () -> {
+  public static Supplier<Subscriber<String>> gimme = () -> {
     return new Subscriber<String>() {
       private boolean empty = true;
 
