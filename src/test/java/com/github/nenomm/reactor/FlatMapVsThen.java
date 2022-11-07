@@ -26,7 +26,7 @@ public class FlatMapVsThen {
           logger.info("Something really slow is about to happen...");
           sleep(3000);
           logger.info("Slow finished!");
-          return Mono.<String>create(emitter -> emitter.success("done"));
+          return Mono.<String>create(emitter -> emitter.success("done with slow"));
         })
         .subscribeOn(scheduler)
         .doAfterTerminate(latch::countDown)
@@ -46,7 +46,7 @@ public class FlatMapVsThen {
           logger.info("Something really slow is about to happen...");
           sleep(3000);
           logger.info("Slow finished!");
-          emitter.success("done");
+          emitter.success("done with slow");
         }))
         .subscribeOn(scheduler)
         .doAfterTerminate(latch::countDown)

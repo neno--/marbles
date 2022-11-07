@@ -31,7 +31,7 @@ public class MonoIntro {
       @Override
       public void onNext(String s) {
         empty = false;
-        logger.info("OBSERVER: Success {}", s);
+        logger.info("OBSERVER: Success '{}'", s);
       }
 
       @Override
