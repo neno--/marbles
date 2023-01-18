@@ -141,4 +141,17 @@ public class MaybeTest {
         .doOnComplete(() -> logger.info("empty"))
         .subscribe();
   }
+
+  @Test
+  public void emptyShouldBeIgnored() {
+    Maybe.empty()
+        .switchIfEmpty(Maybe.empty())
+        .doOnComplete(() -> logger.info("I am empty"))
+        .flatMapObservable(o -> {
+          logger.info("In flatMapObservable");
+          return Observable.just(o);
+        })
+        .doOnComplete(() -> logger.info("I am still empty"))
+        .subscribe();
+  }
 }
