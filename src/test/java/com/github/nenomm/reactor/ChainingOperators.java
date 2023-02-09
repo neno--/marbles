@@ -24,4 +24,11 @@ public class ChainingOperators {
         .subscribe(integer -> logger.info("Arrived {}", integer));
   }
 
+  @Test
+  public void errorMonoCannotChain() {
+    Mono.error(new RuntimeException("KaBoom"))
+        .then(Mono.just(23))
+        .subscribe(integer -> logger.info("Arrived {}", integer));
+  }
+
 }
