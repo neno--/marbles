@@ -2,6 +2,8 @@ package com.github.nenomm.reactor;
 
 
 import static com.github.nenomm.marbles.SingleIntro.sleep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -227,5 +229,10 @@ public class MonoIntro {
         .doOnNext(integer -> logger.info("next"))
         .doOnSuccess(o -> logger.info("{}", o))
         .subscribe();
+  }
+
+  @Test
+  public void emptyBlocksToNull() {
+    assertNull(Mono.empty().block());
   }
 }
