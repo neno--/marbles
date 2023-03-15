@@ -31,4 +31,11 @@ public class ChainingOperators {
         .subscribe(integer -> logger.info("Arrived {}", integer));
   }
 
+  @Test
+  public void errorCanReturnEmpty() {
+    Mono.error(new RuntimeException("KaBoom"))
+        .onErrorResume(throwable -> Mono.empty())
+        .switchIfEmpty(Mono.just("I was empty once"))
+        .subscribe(str -> logger.info("Arrived {}", str));
+  }
 }
