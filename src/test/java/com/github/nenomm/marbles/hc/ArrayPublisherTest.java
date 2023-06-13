@@ -76,4 +76,50 @@ public class ArrayPublisherTest {
     LOGGER.info("Done");
   }
 
+  @Test
+  public void cancelSubscriptionAfter7() throws InterruptedException {
+    final CountDownLatch latch = new CountDownLatch(1);
+    final ArrayPublisher<Integer> arrayPublisher = new ArrayPublisher<Integer>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+    arrayPublisher
+        .subscribe(new Subscriber<Integer>() {
+          int counter;
+          Subscription subscription;
+
+          @Override
+          public void onSubscribe(Subscription subscription) {
+            LOGGER.info("On subscribe");
+            this.subscription = subscription;
+            subscription.request(1);
+          }
+
+          @Override
+          public void onNext(Integer integer) {
+            counter++;
+            if (counter == 7) {
+              LOGGER.info("Cancelling subscription");
+              this.subscription.cancel();
+              return;
+            }
+            LOGGER.info("On next");
+            this.subscription.request(2);
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+
+          }
+
+          @Override
+          public void onComplete() {
+            LOGGER.info("On complete");
+            latch.countDown();
+          }
+        });
+
+    LOGGER.info("Waiting for termination of the flux");
+    latch.await();
+    LOGGER.info("Done");
+  }
+
 }

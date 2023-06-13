@@ -21,6 +21,8 @@ public class ArrayPublisher<T> implements Publisher<T> {
       long requested = 0;
       long processed = 0;
 
+      boolean cancelled = false;
+
       @Override
       public void request(long n) {
         if (requested > 0) {
@@ -33,6 +35,12 @@ public class ArrayPublisher<T> implements Publisher<T> {
         LOGGER.info("Just requested {} items, total {}", n, requested);
 
         while (requested > 0) {
+          if (cancelled) {
+            LOGGER.info("Oh, I am done!");
+            subscriber.onComplete();
+            return;
+          }
+
           if (processed >= source.length) {
             LOGGER.info("I am done");
             subscriber.onComplete();
@@ -41,9 +49,9 @@ public class ArrayPublisher<T> implements Publisher<T> {
           }
 
           final T item = source[(int) processed];
-          LOGGER.info("Publishing item {}: {}", processed + 1, item);
           requested--;
           processed++;
+          LOGGER.info("Publishing item {}: {}, requested: {}, processed: {}", processed, item, requested, processed);
           subscriber.onNext(item);
         }
         LOGGER.info("Are we here sometimes?");
@@ -52,6 +60,7 @@ public class ArrayPublisher<T> implements Publisher<T> {
       @Override
       public void cancel() {
         LOGGER.info("In cancel");
+        cancelled = true;
       }
     });
 
