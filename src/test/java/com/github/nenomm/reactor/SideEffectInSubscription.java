@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-public class SideeffectInSubscription {
+public class SideEffectInSubscription {
 
-  private static final Logger logger = LoggerFactory.getLogger(SideeffectInSubscription.class);
+  private static final Logger logger = LoggerFactory.getLogger(SideEffectInSubscription.class);
 
   @Test
   void asyncSideEffect() throws InterruptedException {
@@ -26,7 +26,8 @@ public class SideeffectInSubscription {
               } catch (InterruptedException e) {
                 throw new RuntimeException(e);
               }
-            }).subscribeOn(Schedulers.boundedElastic())
+            })
+            .subscribeOn(Schedulers.boundedElastic())
             .subscribe())
         .subscribe(integer -> {
           logger.info("Came here");
