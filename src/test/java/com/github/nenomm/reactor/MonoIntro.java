@@ -235,4 +235,18 @@ public class MonoIntro {
   public void emptyBlocksToNull() {
     assertNull(Mono.empty().block());
   }
+
+  @Test
+  public void whatOnError() {
+    Mono.fromCallable(() -> something())
+        .doOnError(throwable -> logger.error("Oh noes!", throwable))
+        .onErrorResume(throwable -> Mono.empty())
+        .doOnNext(integer -> logger.info("next"))
+        .doOnTerminate(() -> logger.info("terminate"))
+        .subscribe();
+  }
+
+  private static int something() {
+    throw new RuntimeException("BOOM");
+  }
 }
