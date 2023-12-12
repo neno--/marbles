@@ -1,11 +1,13 @@
 package com.github.nenomm.reactor;
 
 
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class Errors {
 
@@ -15,12 +17,7 @@ public class Errors {
   @Test
   public void itIsNotResumingOriginalFlux() {
     Flux.just(1, 2, 3, 4, 5, 6, 7)
-        .flatMap(number -> {
-          if (number == 4) {
-            throw new RuntimeException("Boom!");
-          }
-          return Flux.just(number);
-        })
+        .flatMap(number -> someService(number))
         .onErrorResume(e -> Flux.just(100, 200, 300))
         .subscribe(integer -> logger.info("Arrived: {}", integer));
 
@@ -40,11 +37,28 @@ public class Errors {
   private static Mono<Integer> someService(int i) {
     return Mono.just(i)
         .map(integer -> {
-          if (i == 4) {
-            throw new RuntimeException("Boom!");
-          } else {
-            return i;
-          }
-        });
+              if (i == 4) {
+                throw new RuntimeException("Boom!");
+              } else {
+                return i;
+              }
+            }
+        );
   }
+
+  @Test
+  public void tryAgain() throws InterruptedException {
+    Mono.defer(() -> {
+          logger.info("Doin' it");
+          return Mono.just(4);
+        })
+        .flatMap(number -> someService(number))
+        .retryWhen(Retry.backoff(5, Duration.ofMillis(100)).filter(e -> e instanceof RuntimeException))
+        .subscribe(integer -> logger.info("Arrived: {}", integer));
+
+    Thread.sleep(5000);
+    logger.info("Done!");
+  }
+
+
 }
