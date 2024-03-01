@@ -60,5 +60,27 @@ public class Errors {
     logger.info("Done!");
   }
 
+  @Test
+  public void tryNestedAgain() throws InterruptedException {
+    Mono.defer(() -> {
+          int state = 0;
+          logger.info("Doin' it");
+          return Mono.just(state++);
+        })
+        .flatMap(number -> Mono.just(number)
+            .doOnNext(integer -> logger.info("I am here!"))
+            .filter(thisNumber -> thisNumber > 3)
+            .switchIfEmpty(
+                Mono.fromRunnable(() -> logger.info("Now I am here!"))
+                    .then(Mono.just(33))
+                    .doOnNext(integer -> logger.info("What about me?"))
+                    .then(Mono.error(new RuntimeException("EMPTY"))))
+            .retryWhen(Retry.backoff(5, Duration.ofMillis(100)).filter(e -> e instanceof RuntimeException)))
+        .subscribe(integer -> logger.info("Arrived: {}", integer));
+
+    Thread.sleep(5000);
+    logger.info("Done!");
+  }
+
 
 }
