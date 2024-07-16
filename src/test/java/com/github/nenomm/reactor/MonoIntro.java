@@ -2,7 +2,6 @@ package com.github.nenomm.reactor;
 
 
 import static com.github.nenomm.marbles.SingleIntro.sleep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Objects;
@@ -243,6 +242,15 @@ public class MonoIntro {
         .onErrorResume(throwable -> Mono.empty())
         .doOnNext(integer -> logger.info("next"))
         .doOnTerminate(() -> logger.info("terminate"))
+        .subscribe();
+  }
+
+  @Test
+  public void nullMapsToEmpty() {
+    Mono.just(1)
+        .mapNotNull(integer -> null)
+        .switchIfEmpty(Mono.justOrEmpty(27))
+        .doOnNext(integer -> logger.info("next {}", integer))
         .subscribe();
   }
 
